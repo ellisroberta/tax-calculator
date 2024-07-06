@@ -169,24 +169,24 @@ class TaxServiceTest {
 //        List<BigDecimal> actualTaxes = taxService.calculateTaxes(operations);
 //        assertEquals(expectedTaxes, actualTaxes);
 //    }
-//
-//    @Test
-//    void testCase8() {
-//        List<OperationDto> operations = Arrays.asList(
-//                new OperationDto("buy", BigDecimal.valueOf(10.00), 10000),
-//                new OperationDto("sell", BigDecimal.valueOf(50.00), 10000),
-//                new OperationDto("buy", BigDecimal.valueOf(20.00), 10000),
-//                new OperationDto("sell", BigDecimal.valueOf(50.00), 10000)
-//        );
-//        List<BigDecimal> expectedTaxes = Arrays.asList(
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.valueOf(80000.00).setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.valueOf(60000.00).setScale(2, RoundingMode.HALF_UP)
-//        );
-//
-//        List<BigDecimal> actualTaxes = taxService.calculateTaxes(operations);
-//
-//        assertEquals(expectedTaxes, actualTaxes);
-//    }
+
+    @Test
+    void testCase8() {
+        List<OperationDto> operations = Arrays.asList(
+                new OperationDto("buy", BigDecimal.valueOf(10.00), 10000),
+                new OperationDto("sell", BigDecimal.valueOf(50.00), 10000),
+                new OperationDto("buy", BigDecimal.valueOf(20.00), 10000),
+                new OperationDto("sell", BigDecimal.valueOf(50.00), 10000)
+        );
+        List<BigDecimal> expectedTaxes = Arrays.asList(
+                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
+                BigDecimal.valueOf(80000.00).setScale(2, RoundingMode.HALF_UP),
+                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
+                BigDecimal.valueOf(60000.00).setScale(2, RoundingMode.HALF_UP)
+        );
+
+        List<BigDecimal> actualTaxes = taxService.calculateTaxes(operations);
+
+        assertEquals(expectedTaxes, actualTaxes);
+    }
 }

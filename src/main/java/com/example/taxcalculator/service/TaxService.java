@@ -47,65 +47,59 @@ public class TaxService {
     private BigDecimal processSellOperation(OperationDto dto) {
         BigDecimal totalOperationValue = dto.getUnitCost().multiply(BigDecimal.valueOf(dto.getQuantity()));
 
-        // Verificar se o valor total da operação é menor ou igual a R$ 20.000,00
         if (totalOperationValue.compareTo(BigDecimal.valueOf(20000)) <= 0) {
             return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
         }
 
-        // Cópia do estado atual para variáveis locais
-        BigDecimal currentWeightedAveragePrice = weightedAveragePrice;
-        int currentTotalQuantity = totalQuantity;
-        BigDecimal currentAccumulatedLosses = accumulatedLosses;
-
-        // Calcular ganho ou perda da operação
-        BigDecimal gainOrLoss = dto.getUnitCost().subtract(currentWeightedAveragePrice)
+        BigDecimal gainOrLoss = dto.getUnitCost().subtract(weightedAveragePrice)
                 .multiply(BigDecimal.valueOf(dto.getQuantity()));
 
-        BigDecimal tax;
-        if (gainOrLoss.compareTo(BigDecimal.ZERO) < 0) {
-            // Prejuízo
-            currentAccumulatedLosses = currentAccumulatedLosses.add(gainOrLoss.abs());
-            tax = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
-        } else {
-            // Lucro
-            if (currentAccumulatedLosses.compareTo(BigDecimal.ZERO) > 0) {
-                if (gainOrLoss.compareTo(currentAccumulatedLosses) <= 0) {
-                    currentAccumulatedLosses = currentAccumulatedLosses.subtract(gainOrLoss);
-                    tax = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
-                } else {
-                    gainOrLoss = gainOrLoss.subtract(currentAccumulatedLosses);
-                    currentAccumulatedLosses = BigDecimal.ZERO;
-                    BigDecimal taxRate = BigDecimal.valueOf(0.20); // Taxa de imposto de 20%
-                    tax = gainOrLoss.multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
-                }
-            } else {
-                BigDecimal taxRate = BigDecimal.valueOf(0.20); // Taxa de imposto de 20%
-                tax = gainOrLoss.multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
-            }
-        }
+        BigDecimal tax = calculateTax(gainOrLoss);
 
-        // Atualizar variáveis globais apenas se houver mudanças
-        if (currentWeightedAveragePrice.compareTo(weightedAveragePrice) != 0) {
-            weightedAveragePrice = currentWeightedAveragePrice;
-        }
-        if (currentTotalQuantity != totalQuantity) {
-            totalQuantity = currentTotalQuantity;
-        }
-        if (currentAccumulatedLosses.compareTo(accumulatedLosses) != 0) {
-            accumulatedLosses = currentAccumulatedLosses;
-        }
+        // Atualizar estado global
+        updateGlobalState(gainOrLoss, dto.getQuantity());
 
         return tax;
     }
 
+    private BigDecimal calculateTax(BigDecimal gainOrLoss) {
+        if (gainOrLoss.compareTo(BigDecimal.ZERO) < 0) {
+            return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        }
+
+        if (accumulatedLosses.compareTo(BigDecimal.ZERO) > 0) {
+            if (gainOrLoss.compareTo(accumulatedLosses) <= 0) {
+                accumulatedLosses = accumulatedLosses.subtract(gainOrLoss);
+                return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+            } else {
+                gainOrLoss = gainOrLoss.subtract(accumulatedLosses);
+                accumulatedLosses = BigDecimal.ZERO;
+            }
+        }
+
+        BigDecimal taxRate = BigDecimal.valueOf(0.20);
+        return gainOrLoss.multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private void updateGlobalState(BigDecimal gainOrLoss, int quantitySold) {
+        if (gainOrLoss.compareTo(BigDecimal.ZERO) < 0) {
+            accumulatedLosses = accumulatedLosses.add(gainOrLoss.abs());
+        }
+        totalQuantity -= quantitySold;
+        if (totalQuantity == 0) {
+            weightedAveragePrice = BigDecimal.ZERO;
+        }
+    }
 
     public void saveOperations(List<OperationDto> operations) {
+        List<Operation> entities = new ArrayList<>();
         for (OperationDto dto : operations) {
             Operation operation = new Operation();
             operation.setType(dto.getType());
             operation.setUnitCost(dto.getUnitCost());
             operation.setQuantity(dto.getQuantity());
-            repository.save(operation);
+            entities.add(operation);
         }
+        repository.saveAll(entities);
     }
 }
