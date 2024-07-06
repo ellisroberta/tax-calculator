@@ -3,6 +3,7 @@ package com.example.taxcalculator.service;
 import com.example.taxcalculator.dto.OperationDto;
 import com.example.taxcalculator.model.Operation;
 import com.example.taxcalculator.repository.OperationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ public class TaxService {
     private int totalQuantity = 0;
     private BigDecimal accumulatedLosses = BigDecimal.ZERO;
 
+    @Autowired
     public TaxService(OperationRepository repository) {
         this.repository = repository;
     }
