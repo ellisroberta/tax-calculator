@@ -141,66 +141,6 @@ class TaxServiceTest {
         assertTaxes(expectedTaxes, actualTaxes);
     }
 
-//    @Test
-//    @DisplayName("Case 6")
-//    void testCase6() {
-//        List<OperationDto> operations = Arrays.asList(
-//                new OperationDto("buy", new BigDecimal("10.00"), 10000),
-//                new OperationDto("sell", new BigDecimal("2.00"), 5000),
-//                new OperationDto("sell", new BigDecimal("20.00"), 2000),
-//                new OperationDto("sell", new BigDecimal("20.00"), 2000),
-//                new OperationDto("sell", new BigDecimal("25.00"), 1000)
-//        );
-//
-//        when(repository.saveAll(ArgumentMatchers.anyList())).thenReturn(null);
-//
-//        List<BigDecimal> expectedTaxes = Arrays.asList(
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                new BigDecimal("3000.00")
-//        );
-//
-//        List<BigDecimal> actualTaxes = taxService.calculateTaxes(operations);
-//
-//        assertTaxes(expectedTaxes, actualTaxes);
-//    }
-//
-//    @Test
-//    @DisplayName("Case 7")
-//    void testCase7() {
-//        List<OperationDto> operations = Arrays.asList(
-//                new OperationDto("buy", new BigDecimal("10.00"), 10000),
-//                new OperationDto("sell", new BigDecimal("2.00"), 5000),
-//                new OperationDto("sell", new BigDecimal("20.00"), 2000),
-//                new OperationDto("sell", new BigDecimal("20.00"), 2000),
-//                new OperationDto("sell", new BigDecimal("25.00"), 1000),
-//                new OperationDto("buy", new BigDecimal("20.00"), 10000),
-//                new OperationDto("sell", new BigDecimal("15.00"), 5000),
-//                new OperationDto("sell", new BigDecimal("30.00"), 4350),
-//                new OperationDto("sell", new BigDecimal("30.00"), 650)
-//        );
-//
-//        when(repository.saveAll(ArgumentMatchers.anyList())).thenReturn(null);
-//
-//        List<BigDecimal> expectedTaxes = Arrays.asList(
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                new BigDecimal("3000.00"),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.valueOf(3700.00).setScale(2, RoundingMode.HALF_UP),
-//                BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP)
-//        );
-//
-//        List<BigDecimal> actualTaxes = taxService.calculateTaxes(operations);
-//
-//        assertTaxes(expectedTaxes, actualTaxes);
-//    }
-
     @Test
     @DisplayName("Case 8")
     void testCase8() {

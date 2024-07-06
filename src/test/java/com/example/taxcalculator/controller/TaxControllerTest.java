@@ -33,7 +33,6 @@ public class TaxControllerTest {
 
     @Test
     void testCalculateTaxes() {
-        // Given
         List<OperationDto> operations = Arrays.asList(
                 new OperationDto("buy", new BigDecimal("10.00"), 10000),
                 new OperationDto("sell", new BigDecimal("5.00"), 5000),
@@ -46,10 +45,8 @@ public class TaxControllerTest {
         );
         when(taxService.calculateTaxes(operations)).thenReturn(expectedTaxes);
 
-        // When
         ResponseEntity<List<BigDecimal>> responseEntity = taxController.calculateTaxes(operations);
 
-        // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedTaxes, responseEntity.getBody());
     }

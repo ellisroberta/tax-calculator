@@ -26,6 +26,7 @@ public class TaxService {
     }
 
     public List<BigDecimal> calculateTaxes(List<OperationDto> operations) {
+        resetState();
         List<BigDecimal> taxes = new ArrayList<>();
         for (OperationDto dto : operations) {
             if ("buy".equalsIgnoreCase(dto.getType())) {
@@ -43,7 +44,7 @@ public class TaxService {
         BigDecimal totalCost = weightedAveragePrice.multiply(BigDecimal.valueOf(totalQuantity))
                 .add(dto.getUnitCost().multiply(BigDecimal.valueOf(dto.getQuantity())));
         totalQuantity += dto.getQuantity();
-        weightedAveragePrice = totalCost.divide(BigDecimal.valueOf(totalQuantity), RoundingMode.HALF_UP);
+        weightedAveragePrice = totalCost.divide(BigDecimal.valueOf(totalQuantity), 2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal processSellOperation(OperationDto dto) {
@@ -58,14 +59,14 @@ public class TaxService {
 
         BigDecimal tax = calculateTax(gainOrLoss);
 
-        // Atualizar estado global
-        updateGlobalState(gainOrLoss, dto.getQuantity());
+        updateGlobalState(dto.getQuantity());
 
         return tax;
     }
 
     private BigDecimal calculateTax(BigDecimal gainOrLoss) {
         if (gainOrLoss.compareTo(BigDecimal.ZERO) < 0) {
+            accumulatedLosses = accumulatedLosses.add(gainOrLoss.abs());
             return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
         }
 
@@ -83,14 +84,17 @@ public class TaxService {
         return gainOrLoss.multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
     }
 
-    private void updateGlobalState(BigDecimal gainOrLoss, int quantitySold) {
-        if (gainOrLoss.compareTo(BigDecimal.ZERO) < 0) {
-            accumulatedLosses = accumulatedLosses.add(gainOrLoss.abs());
-        }
+    private void updateGlobalState(int quantitySold) {
         totalQuantity -= quantitySold;
         if (totalQuantity == 0) {
             weightedAveragePrice = BigDecimal.ZERO;
         }
+    }
+
+    private void resetState() {
+        weightedAveragePrice = BigDecimal.ZERO;
+        totalQuantity = 0;
+        accumulatedLosses = BigDecimal.ZERO;
     }
 
     public void saveOperations(List<OperationDto> operations) {
